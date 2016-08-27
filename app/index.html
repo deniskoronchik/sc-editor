@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+
+    <link rel="stylesheet" type="text/css" href="../node_modules/semantic-ui-css/semantic.min.css">
+
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/semantic-ui-css/semantic.min.js"></script>
+
+    <script>if (window.module) module = window.module;</script>
+
+  </head>
+  <body class="basic minimal">
+
+    <!-- top menu !-->
+    <div id="ui-main-menu" class="ui top attached menu inverted">
+      <div id="ui-main-sidebar-button" class="ui icon black button">
+        <i class="content icon"></i>
+      </div>
+    </div>
+
+    <div id="ui-main-wrap" class="ui bottom attached segment pushable">
+      <!-- side bar !-->
+      <div id="ui-main-sidebar" class="ui inverted labeled icon left inline vertical sidebar menu">
+        <a class="item">
+          <i class="home icon"></i>
+          Home
+        </a>
+        <a class="item">
+          <i class="settings layout icon"></i>
+          Settings
+        </a>
+        <a class="item">
+          <i class="help icon"></i>
+          About
+        </a>
+      </div>
+
+      <!-- main content !-->
+      <div class="pusher">
+        <div id="ui-main-content" class="ui basic segment">
+          Hello World!
+        </div>
+      </div>
+
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
