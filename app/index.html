@@ -5,6 +5,7 @@
     <title>Index</title>
 
     <link rel="stylesheet" type="text/css" href="../node_modules/semantic-ui-css/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/main.css">
 
     <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 
@@ -21,20 +22,25 @@
       <div id="ui-main-sidebar-button" class="ui icon black button">
         <i class="content icon"></i>
       </div>
+      <div class="right menu">
+        <div class="item">
+          <i id="ui-main-connect-state" class="square red icon"></i>
+        </div>
+      </div>
     </div>
 
     <div id="ui-main-wrap" class="ui bottom attached segment pushable">
       <!-- side bar !-->
       <div id="ui-main-sidebar" class="ui inverted labeled icon left inline vertical sidebar menu">
-        <a class="item">
+        <a id="ui-main-sidebar-home-button" class="item" page="ui-main-home-page">
           <i class="home icon"></i>
           Home
         </a>
-        <a class="item">
+        <a id="ui-main-sidebar-settings-button" class="item" page="ui-main-settings-page">
           <i class="settings layout icon"></i>
           Settings
         </a>
-        <a class="item">
+        <a id="ui-main-sidebar-about-button" class="item" page="ui-main-about-page">
           <i class="help icon"></i>
           About
         </a>
@@ -42,8 +48,32 @@
 
       <!-- main content !-->
       <div class="pusher">
+        <div id="ui-main-content-dimmer" class="ui dimmer">
+          <div class="ui text loader">Loading</div>
+        </div>
+
         <div id="ui-main-content" class="ui basic segment">
-          Hello World!
+          <!-- Home page !-->
+          <div id="ui-main-home-page" class="ui basic segment page">
+            <h1>Home</h1>
+          </div>
+
+          <!-- Settings page !-->
+          <div id="ui-main-settings-page" class="ui basic segment page hidden">
+            <h1>Settings</h1>
+            <div id="ui-main-settings-button-save" class="ui button green"><i class="icon save"></i>Save</div>
+            <div id="ui-main-settings-tab-header" class="ui top attached pointing secondary menu">
+            </div>
+            <div id="ui-main-settings-tab-content" class="ui bottom attached active tab segment">
+            </div>
+          </div>
+
+          <!-- About page !-->
+          <div id="ui-main-about-page" class="ui basic segment page hidden">
+            <h1>About</h1>
+            <img class="ui small image" src="assets/images/logo.png">
+          </div>
+
         </div>
       </div>
 

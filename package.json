@@ -8,8 +8,10 @@
     "win-bundle": "electron-packager . ScEditorApp --platform=win32 --arch=x64  --icon=icon.ico"
   },
   "dependencies": {
+    "electron-config": "^0.2.1",
     "jquery": "^3.1.0",
     "remote": "^0.2.6",
+    "sc-network": "git+https://github.com/deniskoronchik/sc-network-js.git",
     "semantic-ui-css": "^2.2.3"
   }
 }
