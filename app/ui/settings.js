@@ -37,9 +37,9 @@ function SettingsUI() {
 
       tab.onCreate($content);
       if (tabs.length === 1) {
-        $header.addClass('active');
         $header.tab('change tab', tab.getId());
       }
+      $header.tab();
 
     },
 
@@ -58,7 +58,7 @@ function SettingsUI() {
     },
 
     save: function() {
-      // find avtive tab
+      // find active tab
       var active_id = ref.$page_settings_tab_header.find('.active').attr('data-tab');
       if (active_id && active_id.length > 0) {
         for (var t in tabs) {
@@ -101,6 +101,10 @@ function SettingsTab(options) {
     onCreate: function($cont) {
       $container = $cont;
       options.onCreate(this, $container);
+    },
+
+    getContainer: function() {
+      return $container;
     }
   };
 }

@@ -13,7 +13,12 @@ server.connect({
   "host": settings.get_sctp_host(),
   "port": settings.get_sctp_port()
 }).then(function(result) {
+
+  ui.setContentDimmerText("Load plugins");
+  plugins.init();
+
   ui.hideContentDimmer();
+
   ui.updateConnectionState(result);
 });
 

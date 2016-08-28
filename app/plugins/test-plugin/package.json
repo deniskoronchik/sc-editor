@@ -1,0 +1,9 @@
+{
+  "name": "test-plugin",
+  "version": "0.0.1",
+  "main": "./test-plugin.js",
+  "priority": 0,
+  "load": true,
+  "icon": null,
+  "description": "Test plugin"
+}

@@ -5,12 +5,11 @@ if (global.config == undefined) {
     "name": "settings",
     "defaults": {
       "sctp_host": 'localhost',
-      "sctp_port": '55770'
+      "sctp_port": '55770',
+      "plugins_path": "app/plugins"
     }
   });
 }
-
-settings = {};
 
 function set_option(option, value) {
   global.config.set(option, value);
@@ -24,31 +23,48 @@ function delete_option(option) {
   global.config.delete(option);
 }
 
-settings.set = set_option;
-settings.get = get_option;
-settings.delete = delete_option;
+function set_option_check(option, value, type) {
+  if (typeof value != type)
+    throw "You can provide just a " + type + " as a " + option;
+
+  set_option(option, value);
+}
 
 // ---
-settings.set_sctp_host = function(host) {
-  if (typeof host != 'string')
-    throw "You can provide just a string as a host";
 
-  set_option('sctp_host', host);
+module.exports = {
+  set                 : set_option,
+  get                 : get_option,
+  delete              : delete_option,
+
+  set_sctp_host:
+    function(host) {
+      set_option_check('sctp_host', host, 'string');
+    },
+
+  get_sctp_host:
+    function() {
+      return get_option('sctp_host');
+    },
+
+  set_sctp_port:
+    function(port) {
+      set_option_check('sctp_port', port, 'number');
+    },
+
+  get_sctp_port:
+    function() {
+      return get_option('sctp_port');
+    },
+
+  set_plugins_path:
+    function(path) {
+      set_option_check('plugins_path', path, 'string');
+    },
+
+  get_plugins_path:
+    function() {
+      return get_option("plugins_path");
+    }
+
 };
-
-settings.get_sctp_host = function() {
-  return get_option('sctp_host');
-};
-
-settings.set_sctp_port = function(port) {
-  if (typeof port != 'number')
-    throw "You can provide just an integer number as a port";
-
-  set_option('sctp_port', port);
-}
-
-settings.get_sctp_port = function() {
-  return get_option('sctp_port');
-}
-
-module.exports = settings;

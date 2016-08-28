@@ -1,18 +1,21 @@
+var Template = require('template-js');
+
 var ref = require('./ui/references');
 var ui_settings = require('./ui/settings');
 var settings = require('./settings');
+
 
 var ui = {};
 
 // Sctp settings tab
 ui_settings.add_tab(new ui_settings.Tab({
   "id": 'sctp',
-  "name": 'server',
+  "name": 'Server',
   "onActive": function(self) {
 
   },
   "onSave": function(self) {
-    var $content = ref.$page_settings_tab_content.find('[data-tab="' + self.getId() + '"]');
+    var $content = self.getContainer();//ref.$page_settings_tab_content.find('[data-tab="' + self.getId() + '"]');
     var host_value = $content.find('[name="sctp_host"]').val();
     var port_value = $content.find('[name="sctp_port"]').val();
 
@@ -20,37 +23,13 @@ ui_settings.add_tab(new ui_settings.Tab({
     settings.set_sctp_port(parseInt(port_value));
   },
   "onCreate": function(self, $container) {
-      var $element =
-        $(document.createElement('div'))
-          .addClass('ui two column middle aligned relaxed fitted stackable grid')
-          .append($(document.createElement('div'))
-            .addClass('column')
-            .append($(document.createElement('div'))
-              .addClass('ui form segment')
-              .append($(document.createElement('div'))
-                .addClass('field')
-                .append($(document.createElement('label')).text('Host'))
-                .append($(document.createElement('input'))
-                  .attr('name', 'sctp_host')
-                  .attr('placeholder', 'localhost')
-                  .attr('type', 'text')
-                  .val(settings.get_sctp_host)
-                )
-              )
-              .append($(document.createElement('div'))
-                .addClass('field')
-                .append($(document.createElement('label')).text('Port'))
-                .append($(document.createElement('input'))
-                  .attr('name', 'sctp_port')
-                  .attr('placeholder', '55770')
-                  .attr('type', 'text')
-                  .val(settings.get_sctp_port)
-                )
-              )
-            )
-          );
-
-      $container.append($element);
+    var $tmpl = new Template('app/templates/settings_server.tmpl.html', {
+      sctp_host_label: "Host",
+      sctp_port_label: "Port",
+      sctp_host_value: settings.get_sctp_host(),
+      sctp_port_value: settings.get_sctp_port()
+    });
+    $container.html($tmpl.toString());
   }
 }));
 
@@ -76,7 +55,7 @@ function init_sidebar() {
 }
 
 // --------------------
-ui.init = function() {
+initImpl = function() {
   init_sidebar();
 
   ref.$content_dimmer.dimmer({
@@ -89,21 +68,25 @@ ui.init = function() {
   });
 };
 
-ui.showContentDimmer = function(message = "Loading") {
+setContentDimmerTextImpl = function(message) {
   ref.$content_dimmer.dimmer('show').find('.text').text(message);
+}
+
+showContentDimmerImpl = function(message = "Loading") {
+  setContentDimmerTextImpl(message);
   ref.$side_bar_button.addClass('disabled');
 };
 
-ui.hideContentDimmer = function() {
+hideContentDimmerImpl = function() {
   ref.$content_dimmer.dimmer('hide');
   ref.$side_bar_button.removeClass('disabled');
 };
 
-ui.isContentDimmerActive = function() {
+isContentDimmerActiveImpl = function() {
   return ref.$content_dimmer.dimmer('is active');
 };
 
-ui.updateConnectionState = function(is_connected) {
+updateConnectionStateImpl = function(is_connected) {
   var ok_class = 'olive';
   var fail_class = 'red';
 
@@ -116,4 +99,11 @@ ui.updateConnectionState = function(is_connected) {
   }
 };
 
-module.exports = ui;
+module.exports = {
+  init                      : initImpl,
+  updateConnectionState     : updateConnectionStateImpl,
+  isContentDimmerActive     : isContentDimmerActiveImpl,
+  hideContentDimmer         : hideContentDimmerImpl,
+  showContentDimmer         : showContentDimmerImpl,
+  setContentDimmerText      : setContentDimmerTextImpl
+};
