@@ -19,6 +19,10 @@ module.exports = {
   $sidebar_settings_button:   $('#ui-main-sidebar-settings-button'),
   $sidebar_about_button:      $('#ui-main-sidebar-about-button'),
 
+  $page_home_content:         $('#ui-main-home-page'),
+  $page_home_cards:           $('#ui-main-home-page-cards'),
+  $page_home_windows:         $('#ui-main-home-window'),
+
   $page_settings_content:     $page_settings_content,
   $page_settings_tab_header:  $page_settings_tab_header,
   $page_settings_tab_content: $page_settings_tab_content,

@@ -68,11 +68,14 @@ function PluginManager() {
           }
           plugin_json._this_directory_path = plugin_path;
           plugin_json._this_file_path = plugin_package_path;
-          if (plugin_json.order === 'undefined') {
+          if (plugin_json.order === undefined) {
             plugin_json.order = 1000;
           }
-          if (plugin_json.load === 'undefined') {
+          if (plugin_json.load === undefined) {
             plugin_json.load = true;
+          }
+          if (plugin_json.icon) {
+            plugin_json.icon = Path.resolve(plugin_path, plugin_json.icon);
           }
           plugins_meta.push(plugin_json);
         }

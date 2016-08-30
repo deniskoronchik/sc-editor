@@ -4,8 +4,8 @@ var ref = require('./ui/references');
 var ui_settings = require('./ui/settings');
 var settings = require('./settings');
 
+var ui_home = require('./ui/home');
 
-var ui = {};
 
 // Sctp settings tab
 ui_settings.add_tab(new ui_settings.Tab({
@@ -33,7 +33,6 @@ ui_settings.add_tab(new ui_settings.Tab({
   }
 }));
 
-
 // --------------------
 // value of page attribute for a sidebar button
 function switch_content_page(page) {
@@ -55,8 +54,9 @@ function init_sidebar() {
 }
 
 // --------------------
-initImpl = function() {
+function initImpl() {
   init_sidebar();
+  ui_home.init();
 
   ref.$content_dimmer.dimmer({
     'closable': false
@@ -68,25 +68,25 @@ initImpl = function() {
   });
 };
 
-setContentDimmerTextImpl = function(message) {
+function setContentDimmerTextImpl(message) {
   ref.$content_dimmer.dimmer('show').find('.text').text(message);
 }
 
-showContentDimmerImpl = function(message = "Loading") {
+function showContentDimmerImpl(message = "Loading") {
   setContentDimmerTextImpl(message);
   ref.$side_bar_button.addClass('disabled');
 };
 
-hideContentDimmerImpl = function() {
+function hideContentDimmerImpl() {
   ref.$content_dimmer.dimmer('hide');
   ref.$side_bar_button.removeClass('disabled');
 };
 
-isContentDimmerActiveImpl = function() {
+function isContentDimmerActiveImpl() {
   return ref.$content_dimmer.dimmer('is active');
 };
 
-updateConnectionStateImpl = function(is_connected) {
+function updateConnectionStateImpl(is_connected) {
   var ok_class = 'olive';
   var fail_class = 'red';
 
@@ -99,11 +99,19 @@ updateConnectionStateImpl = function(is_connected) {
   }
 };
 
+// ----- managers -----
+
+
 module.exports = {
   init                      : initImpl,
   updateConnectionState     : updateConnectionStateImpl,
   isContentDimmerActive     : isContentDimmerActiveImpl,
   hideContentDimmer         : hideContentDimmerImpl,
   showContentDimmer         : showContentDimmerImpl,
-  setContentDimmerText      : setContentDimmerTextImpl
+  setContentDimmerText      : setContentDimmerTextImpl,
+
+  /* Proxies to ui/home.js */
+  registerUserInterface     : ui_home.registerUserInterface,
+  createUserInterface       : ui_home.createUserInterface,
+  unregisterUserInterface   : ui_home.unregisterUserInterface
 };

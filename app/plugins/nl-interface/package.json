@@ -1,0 +1,9 @@
+{
+  "name": "nl-plugin",
+  "version": "0.1.0",
+  "main": "./nl-plugin.js",
+  "order": 10,
+  "load": true,
+  "icon": "nl-plugin-icon.png",
+  "description": "Plugin that implement user interface for a system with natural language support"
+}

@@ -17,9 +17,10 @@ server.connect({
   ui.setContentDimmerText("Load plugins");
   plugins.init();
 
+  ui.setContentDimmerText("Initialize UI");
+  ui.init();
+
   ui.hideContentDimmer();
 
   ui.updateConnectionState(result);
 });
-
-ui.init();
