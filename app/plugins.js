@@ -9,6 +9,7 @@ const InjectCss = require('inject-css');
 const settings = require('./settings');
 const ui_settings = require('./ui/settings');
 const ui = require('./ui');
+const server = require('./server');
 
 // TODO: possible make a plugin manager as an external package
 
@@ -144,7 +145,7 @@ function PluginManager() {
           try {
             var plugin = new require('./' + Path.relative(__dirname, plugin_main_path));//'./plugins/test-plugin/test-plugin.js'))();
             plugin.__meta = meta;
-            plugin.initPlugin().then(function() {
+            plugin.initPlugin(server).then(function() {
               var dfd_plugin = new Q.defer();
 
               plugin_load_promises.push(dfd_plugin.promise);

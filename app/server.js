@@ -51,6 +51,7 @@ server.sctp_connect = null;
 server.connect = function (options) {
   var sctp_connect = new SctpConnection(options);
   server.sctp_connect = sctp_connect;
+  server.client = sctp_connect.client;
 
   var dfd = new Q.defer();
   sctp_connect.connect().then(function(state) {
