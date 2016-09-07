@@ -1,11 +1,9 @@
-.command-line {
+.nl-command-line {
     width: 100%;
     left: 0;
     right: 0;
 }
-#ui-main-content {
-    padding-bottom: 40px;
-}
-.scroll-content {
+
+.nl-scroll-content {
     overflow-y: scroll;
 }

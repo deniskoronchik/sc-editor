@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "./test-plugin.js",
   "order": 10000,
-  "load": true,
+  "load": false,
   "icon": null,
   "description": "Test plugin"
 }

@@ -7,12 +7,30 @@ var Template = require('template-js');
 var registeredUserInterfaces = {};
 var uiWindows = {};
 
-function registerUserInterfaceImpl(name, meta) {
-  if (registeredUserInterfaces[name]) {
-    throw "User interface with name " + name + " already exist";
+function _showRegisteredInterface(meta) {
+
+  var html_template = new Template('app/templates/ui-home-item.tmpl.html', {
+    name: meta.name,
+    icon_path: meta.icon,
+    display_name: meta.displayName,
+    description: meta.description
+  });
+
+  ref.$page_home_cards.append(html_template.toString());
+}
+
+// -------------------
+function registerUserInterfaceImpl(meta) {
+  if (!meta.name) {
+    throw "Interface haven't name: " + meta;
   }
 
-  registeredUserInterfaces[name] = meta;
+  if (registeredUserInterfaces[meta.name]) {
+    throw "User interface with name " + meta.name + " already exist";
+  }
+
+  registeredUserInterfaces[meta.name] = meta;
+  _showRegisteredInterface(meta);
 }
 
 function createUserInterfaceImpl(name, $container) {
@@ -70,29 +88,9 @@ function requestWindow(ui_name) {
 }
 
 function initImpl() {
-  var items_html = '';
-
-  for (var item in registeredUserInterfaces) {
-    if (registeredUserInterfaces.hasOwnProperty(item)) {
-      var name = item;
-      var meta = registeredUserInterfaces[item];
-
-      meta.__name = name;
-      var html_template = new Template('app/templates/ui-home-item.tmpl.html', {
-        name: name,
-        icon_path: meta.icon,
-        display_name: meta.displayName,
-        description: meta.description
-      });
-
-      items_html += html_template.toString();
-    }
-  }
-
-  ref.$page_home_cards.html(items_html);
 
   // subscribe on click
-  ref.$page_home_cards.find('[ui-name]').click(function(evt) {
+  ref.$page_home_cards.on('click', '[ui-name]', function(evt) {
     var ui_name = $(this).attr('ui-name');
     if (ui_name) {
       requestWindow(ui_name);

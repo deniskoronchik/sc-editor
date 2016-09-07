@@ -1,11 +1,14 @@
-var Q = require('q');
-var FileSystem = require('fs');
-var Template = require('template-js');
-var Path = require('path');
-var Log = require('electron-log');
+const Q = require('q');
+const FileSystem = require('fs');
+const Template = require('template-js');
+const Path = require('path');
+const Log = require('electron-log');
+const EventEmitter = require('events');
+const InjectCss = require('inject-css');
 
-var settings = require('./settings');
-var ui_settings = require('./ui/settings');
+const settings = require('./settings');
+const ui_settings = require('./ui/settings');
+const ui = require('./ui');
 
 // TODO: possible make a plugin manager as an external package
 
@@ -14,19 +17,35 @@ var ui_settings = require('./ui/settings');
  * - name: name of a plugin (required)
  * - version: version of a plugin (required)
  * - main: relative path to a main js file of a plugin (required)
+ * - css: relative path to a css file
  * - order: plugin load priority (optional) (default - 1000). Plugins with less value of order will load first.
  * - load: flag to load plugin (optional) (default - true). If true, then plugin will be loaded; otherwise - not.
  * - icon: relative path to icon file (optional) (default - null)
  * - description: string with description (optional) (default - empty string)
+ *
+ * You can subscribe to events of a plugin manager. Possible events:
+ * - load_plugin - emits, when new plugin loaded. Parameters:
+ *      - plugin - object that represents loaded plugin
+ * - unload_plugin - emits, when plugin unloaded. Parameters:
+ *      - plugin - object that represents unloaded plugin
  */
 function PluginManager() {
   var plugins = [];
+  var events_emitter = new EventEmitter();
+
+  function registerInterface(_interface) {
+    if (_interface.type === "UI") {
+      ui.home.registerUserInterface(_interface);
+    } else {
+      throw "Unknown interface type " + _interface.type;
+    }
+  }
 
   return {
     // Find and load all plugins in specified path directory
     loadPlugins: function(path) {
       Log.info('Load plugins from path ' + path);
-      /// TODO: make async
+      var plugin_load_promises = [];
 
       var plugins_meta = [];
 
@@ -80,7 +99,6 @@ function PluginManager() {
           plugins_meta.push(plugin_json);
         }
 
-
         // sort plugins meta, by order
         plugins_meta.sort(function (a, b) {
           if (a.order < b.order)
@@ -126,8 +144,40 @@ function PluginManager() {
           try {
             var plugin = new require('./' + Path.relative(__dirname, plugin_main_path));//'./plugins/test-plugin/test-plugin.js'))();
             plugin.__meta = meta;
-            plugin.initPlugin();
-            plugins.push(plugin);
+            plugin.initPlugin().then(function() {
+              var dfd_plugin = new Q.defer();
+
+              plugin_load_promises.push(dfd_plugin.promise);
+
+              events_emitter.emit('load_plugin', plugin);
+              plugins.push(plugin);
+
+              // load plugin css
+              if (plugin.__meta.css) {
+
+                var plugin_css_path = Path.normalize(Path.join(plugin.__meta._this_directory_path, plugin.__meta.css));
+
+                if (!FileSystem.statSync(plugin_css_path).isFile()) {
+                  Log.error("Css file " + plugin_css_path + " doesn't exist");
+                }
+
+                var css_code = FileSystem.readFileSync(plugin_css_path);
+                InjectCss(css_code);
+              }
+
+              // register all interfaces of this plugin
+              var interfaces = plugin.interfaces;
+              if (!interfaces || interfaces.length == 0) {
+                throw "There are no any interfaces for a plugin " + plugin.__meta.name;
+              } else {
+                for (var it = 0; it < interfaces.length; ++it) {
+                  var _interface = interfaces[it];
+                  registerInterface(_interface);
+                }
+              }
+
+            });
+
           } catch (err) {
             Log.error("Error while loading " + plugin_main_path + ' : ' + err);
             continue;
@@ -137,15 +187,30 @@ function PluginManager() {
         return true;
       }
 
-      return false;
+      return Q.all(plugin_load_promises);
     },
 
     each: function(fn) {
       for (var i = 0; i < plugins.length; ++i) {
         fn(plugins[i]);
       }
-    }
+    },
 
+    /* Add event listener
+     * - eventName - name of an event
+     * - listener - event listener function
+     */
+    on: function(eventName, listener) {
+      events_emitter.on(eventName, listener);
+    },
+
+    /* Remove event listener
+     * - eventName - name of an event
+     * - listener - listener to remove
+     */
+    removeListener: function(eventName, listener) {
+      events_emitter.removeListener(eventName, listener);
+    }
   };
 }
 
@@ -159,9 +224,14 @@ function create_settings_panel(manager) {
 
     },
     "onCreate": function(self, $container) {
-      // create items for a list of plugins
-      var items_html = '';
-      manager.each(function(plugin) {
+
+      var $tmpl = new Template("app/templates/settings_plugins.tmpl.html", {
+        plugins_path_label: 'Plugins path',
+        plugins_path_value: settings.get_plugins_path(),
+      });
+      $container.html($tmpl.toString());
+
+      function appendPluginItem(plugin) {
         var meta = plugin.__meta;
         var icon = (meta.icon === undefined || meta.icon === null) ? 'assets/images/plugin-empty-icon.png' : meta.icon;
         var item_tmpl = new Template('app/templates/plugin_item.tmpl.html', {
@@ -169,15 +239,10 @@ function create_settings_panel(manager) {
           plugin_name: meta.name,
           plugin_description: meta.description
         });
-        items_html += item_tmpl.toString() + '\n';
-      });
+        $container.find('#ui-plugin-settings-list').append(item_tmpl.toString() + '\n');
+      }
 
-      var $tmpl = new Template("app/templates/settings_plugins.tmpl.html", {
-        plugins_path_label: 'Plugins path',
-        plugins_path_value: settings.get_plugins_path(),
-        plugin_items: items_html
-      });
-      $container.html($tmpl.toString());
+      manager.on('load_plugin', appendPluginItem);
     },
     "onSave": function(self) {
       var path = self.getContainer().find('[name="plugins_path"]').val();
@@ -191,9 +256,8 @@ function create_settings_panel(manager) {
 var plug_manager = new PluginManager();
 
 function initImpl() {
-
-  plug_manager.loadPlugins(settings.get_plugins_path());
   create_settings_panel(plug_manager);
+  plug_manager.loadPlugins(settings.get_plugins_path());
 }
 
 module.exports = {

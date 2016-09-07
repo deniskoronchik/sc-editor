@@ -2,6 +2,7 @@
   "name": "nl-plugin",
   "version": "0.1.0",
   "main": "./nl-plugin.js",
+  "css": "./css/nl-window.css",
   "order": 10,
   "load": true,
   "icon": "nl-plugin-icon.png",

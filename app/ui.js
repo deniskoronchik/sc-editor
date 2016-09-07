@@ -1,11 +1,9 @@
-var Template = require('template-js');
+const Template = require('template-js');
 
-var ref = require('./ui/references');
-var ui_settings = require('./ui/settings');
-var settings = require('./settings');
-
-var ui_home = require('./ui/home');
-
+const ref = require('./ui/references');
+const ui_settings = require('./ui/settings');
+const settings = require('./settings');
+const ui_home = require('./ui/home');
 
 // Sctp settings tab
 ui_settings.add_tab(new ui_settings.Tab({
@@ -111,7 +109,5 @@ module.exports = {
   setContentDimmerText      : setContentDimmerTextImpl,
 
   /* Proxies to ui/home.js */
-  registerUserInterface     : ui_home.registerUserInterface,
-  createUserInterface       : ui_home.createUserInterface,
-  unregisterUserInterface   : ui_home.unregisterUserInterface
+  home                      : ui_home
 };

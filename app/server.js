@@ -33,21 +33,31 @@ function SctpConnection(options) {
       });
 
       return dfd.promise;
+    },
+
+    client: function() {
+      return sctp_client;
     }
 
   };
 }
 
 server.sctp_connect = null;
+
 /* Connect options:
  * - host - host to connect. Example: localhost
  * - port - port for connecting. Example: 55770
  */
-server.connect = function(options) {
+server.connect = function (options) {
   var sctp_connect = new SctpConnection(options);
   server.sctp_connect = sctp_connect;
 
-  return sctp_connect.connect();
+  var dfd = new Q.defer();
+  sctp_connect.connect().then(function(state) {
+    server.keynodes = new SctpClient.Keynodes(sctp_connect.client());
+    dfd.resolve(state);
+  });
+  return dfd.promise;
 }
 
 module.exports = server;

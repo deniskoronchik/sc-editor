@@ -12,7 +12,7 @@ ui.showContentDimmer("Connecting");
 server.connect({
   "host": settings.get_sctp_host(),
   "port": settings.get_sctp_port()
-}).then(function(result) {
+}).then(function(connection_state) {
 
   ui.setContentDimmerText("Load plugins");
   plugins.init();
@@ -22,5 +22,5 @@ server.connect({
 
   ui.hideContentDimmer();
 
-  ui.updateConnectionState(result);
+  ui.updateConnectionState(connection_state);
 });
