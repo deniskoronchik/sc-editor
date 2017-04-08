@@ -7,11 +7,15 @@ const ui = require('./ui');
 var nl_keynodes = [
   'main_nl_dialogue_instance',
   'command_finished',
+  'command_initiated',
   'command_process_user_text_message',
   'self',
   'rrel_last_item',
   'nrel_author',
-  'nrel_translation'
+  'nrel_result',
+  'nrel_output_text',
+  'command_generate_speech_from_text',
+  'rrel_1'
 ];
 
 var interfaces = [];
