@@ -23,7 +23,22 @@ function UserInterfaceNL($container, sctp_client, keynodes) {
     window.AudioContext = window.webkitAudioContext;
   }
 
-  context = new AudioContext();
+  audioContext = new AudioContext();
+
+  function playSpeech(bytes) {
+    var buffer = new Uint8Array( bytes.byteLength );
+    buffer.set( new Uint8Array(bytes), 0 );
+
+    audioContext.decodeAudioData(buffer.buffer).then(function(buf) {
+      // Create a source node from the buffer
+      var source = audioContext.createBufferSource();
+      source.buffer = buf;
+      // Connect to the final output node (the speakers)
+      source.connect(audioContext.destination);
+      // Play immediately
+      source.start(0);
+    });
+  }
 
   function scrollDown() {
     $scroll_content.animate({ scrollTop: $scroll_content.prop("scrollHeight")}, 200);
@@ -69,16 +84,16 @@ function UserInterfaceNL($container, sctp_client, keynodes) {
                         ],
                         {"speech": 2})
           ).then((results) => {
-            console.log('test');
             if (!results) {
               tryCount++;
               if (tryCount < 10)
                 window.setTimeout(check, 500);
             } else {
               var speech_addr = results.get(0, "speech");
-              console.log(speech_addr);
+              console.log('addr ', speech_addr);
               sctp_client.get_link_content(speech_addr, 'binary').then((data) => {
-                console.log('got');
+                console.log('play speech: ', data.byteLength);
+                playSpeech(data);
               });
             }
           });

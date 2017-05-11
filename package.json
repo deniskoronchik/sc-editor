@@ -5,7 +5,7 @@
   "author": "Denis Koronchik <denis.koronchik@gmail.com>",
   "scripts": {
     "start": "electron .",
-    "win-bundle": "electron-packager . ScEditorApp --platform=win32 --arch=x64  --icon=icon.ico",
+    "win-bundle": "electron-packager . ScEditorApp --platform=win32 --arch=x64  --icon=icon.ico"
   },
   "dependencies": {
     "electron-config": "^0.2.1",
